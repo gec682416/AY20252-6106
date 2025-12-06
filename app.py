@@ -29,7 +29,7 @@ def userlog():
     conn = sqlite3.connect('user.db')
     c = conn.cursor()
     c.execute("select *from user")
-    r=""
+    r = ""
     for row in c:
         r = r + str(row)
     c.close()
