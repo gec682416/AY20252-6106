@@ -6,18 +6,24 @@ app = Flask(__name__)
 
 @app.route("/",methods=["GET","POST"])
 def index():
+    global flag
+    flag = 1
     return(render_template("index.html"))
 
 @app.route("/main",methods=["GET","POST"])
 def main():
-    name = request.form.get("q")
-    timestamp = datetime.datetime.now()
-    conn = sqlite3.connect('user.db')
-    c = conn.cursor()
-    c.execute("INSERT INTO user (name,timestamp) VALUES(?,?)",(name,timestamp))
-    conn.commit()
-    c.close()
-    conn.close()
+    global flag
+
+    if flag == 1:
+        name = request.form.get("q")
+        timestamp = datetime.datetime.now()
+        conn = sqlite3.connect("user.db")
+        c = conn.cursor()
+        c.execute("insert into user (name,timestamp) VALUES(?,?)",(name,timestamp))
+        conn.commit()
+        c.close()
+        conn.close()
+        flag = 0
     return(render_template("main.html"))
 
 @app.route("/paynow",methods=["GET","POST"])
@@ -26,7 +32,7 @@ def paynow():
 
 @app.route("/userlog",methods=["GET","POST"])
 def userlog():
-    conn = sqlite3.connect('user.db')
+    conn = sqlite3.connect("user.db")
     c = conn.cursor()
     c.execute("select *from user")
     r = ""
@@ -34,11 +40,11 @@ def userlog():
         r = r + str(row)
     c.close()
     conn.close()
-    return(render_template("userlog.html"))
+    return(render_template("userlog.html",r=r))
 
 @app.route("/deleteuserlog",methods=["GET","POST"])
 def deleteuserlog():
-    conn = sqlite3.connect('user.db')
+    conn = sqlite3.connect("user.db")
     c = conn.cursor()
     c.execute('DELETE FROM user',);
     conn.commit()
